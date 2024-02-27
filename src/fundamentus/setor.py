@@ -12,7 +12,7 @@ import time, logging
 from   tabulate import tabulate
 
 
-def list_papel_setor(setor=None):
+def list_papel_setor_url(url):
     """
     Setor: ...
 
@@ -21,8 +21,6 @@ def list_papel_setor(setor=None):
     """
 
     ## GET: setor
-    url = 'http://www.fundamentus.com.br/resultado.php?setor={}'.format(setor)
-
     hdr = {'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201' ,
            'Accept': 'text/html, text/plain, text/css, text/sgml, */*;q=0.01' ,
            'Accept-Encoding': 'gzip, deflate' ,
@@ -32,16 +30,16 @@ def list_papel_setor(setor=None):
         content = requests.get(url, headers=hdr)
 
         if content.from_cache:
-            logging.debug('.../resultado.php?setor={}: [CACHED]'.format(setor))
+            logging.debug(f'[CACHE] {url}')
         else: # pragma: no cover
-            logging.debug('.../resultado.php?setor={}: sleeping...'.format(setor))
+            logging.debug(f'[SLEEP] {url}')
             time.sleep(.500) # 500 ms
 
 
-    ## parse + load
+    # parse + load
     df = pd.read_html(content.text, decimal=",", thousands='.')[0]
 
-    ##
+    # Return
     return list(df['Papel'])
 
 
@@ -52,7 +50,7 @@ def print_setores():
     print( tabulate(df, headers=['label','desc','id'], tablefmt='presto') )
     return
 
-
+## DESATUALIZADO
 def _init_setor():
     data = pd.DataFrame(_setor, columns=['label','desc','id'])
     data.index = data['label']
@@ -60,7 +58,7 @@ def _init_setor():
     return data[['desc','id']]
 
 
-## Setores:
+## Setores - DESATUALIZADO
 _setor = [
    [ 'agro'            , 'Agropecuária'                       , 42 ] ,
    [ 'saneamento'      , 'Água e Saneamento'                  , 33 ] ,
@@ -111,9 +109,8 @@ _setor = [
    [ 'utilidades'      , 'Utilidades Domésticas'              , 22 ] ,
    [ 'viagens'         , 'Viagens e Lazer'                    , 25 ] ,
 ]
-##
 
-# setup/load
+## DESATUALIZADO
 df = _init_setor()
 
 
